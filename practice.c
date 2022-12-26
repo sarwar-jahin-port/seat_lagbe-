@@ -4,11 +4,15 @@
 #include<windows.h>
 #include<time.h>
 
+/// This function used to put cursor in different co-ordinates in console.
 void gotoxy(int x, int y)
 {
-    COORD c;
+    COORD c; ///COORD is a structure to hold screen COORDinates X and Y.
     c.X=x;
     c.Y=y;
+    /// SetConsoleCursorPosition function sets the cursor position in the console screen buffer.
+    /// The GetStdHandle() function gives us a mechanism for retrieving(get something from somewhere) the standard input
+    /// STD_OUTPUT_HANDLE is the standard output device. Initially, this is the active console screen buffer
     SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), c);     //1. HANDLE 2. COORD
 }
 
@@ -32,7 +36,7 @@ struct SeatNumber
 struct SeatNumber num[100];
 
 
-int n; //global variable for count users
+int n; //global variable for count users from userDB.txt file
 int current; // global variable for showing data on 'my profile' for particular user1
 char seatArray[50][4];
 //using this for password encryption
@@ -45,6 +49,7 @@ void c_time()
     cur_time= localtime(&s);
     printf("Time: %02d:%02d:%02d", cur_time->tm_hour, cur_time->tm_min, cur_time->tm_sec);
 }
+/// Logo for app.
 void logo()
 {
     gotoxy(20, 2);
@@ -60,7 +65,7 @@ void logo()
     gotoxy(20, 7);
     printf(" |_____/|______/_/    \\_\\_|    |______/_/    \\_\\_____|____/|______|(_)  \n");
 }
-
+/// This function reads user informations(id, pass, role, route) from file(userdb.txt).
 void getData()
 {
     int i;
@@ -73,25 +78,48 @@ void getData()
         fscanf(fp,"%s", u[i].role);
         fscanf(fp,"%s", u[i].route);
     }
-    n=i;
+    n=i; ///global variable declared above. Used to count total users.
     fclose(fp);
 }
-
-void writeData()
+/// Login function. User type there username & pass correctly to log into there account.
+void login()
 {
-    FILE *fr;
-    fr = fopen("userDB.txt", "w");
-
+    system("cls");
+    logo();
+    char str[100], password[100];
+    int checkingIfUserfound = 0;
+    gotoxy(50, 10);
+    printf("  LOGIN\t\t");
+    gotoxy(50, 12);
+    printf("\t\t");
+    gotoxy(50, 14);
+    printf("\t\t\t");
+    gotoxy(50, 12);
+    printf("  Enter ID: ");
+    scanf("%s", str);
+    gotoxy(50, 14);
+    printf("  Enter Password: ");
+    scanf("%s", password);
+    /// the below loop will continue upto total user number in userDB.txt file
     for(int i = 0; i<n; i++)
     {
-        fprintf(fr, "%s\n", u[i].id);
-        fprintf(fr, "%s\n", u[i].pass);
-        fprintf(fr, "%s\n", u[i].role);
-        fprintf(fr, "%s\n", u[i].route);
+        if(strcmp(str,u[i].id) == 0 && strcmp(password, u[i].pass) == 0)
+        {
+            current = i; /// here current represents the logged in user index number in userDB.txt file.
+            checkingIfUserfound = 1;
+            if(strcmp("admin",u[i].role) == 0){adminPanel();break;}
+            else{homepage();break;}
+        }
     }
-    fclose(fr);
-}
 
+    if(checkingIfUserfound == 0)
+    {
+        gotoxy(52, 16);printf("Wrong Username or Password entered.");
+        sleep(1);
+        login();
+    }
+}
+/// signup function used to register new users to the app. And there data stores in userDB.txt file.
 void signup()
 {
     int x;
@@ -99,9 +127,9 @@ void signup()
     gotoxy(50, 10);
     printf("  REGISTER\t\t");
     gotoxy(50, 12);
-    printf("\t\t");
+    printf("               ");
     gotoxy(50, 14);
-    printf("\t\t\t");
+    printf("                   ");
     gotoxy(50, 12);
     printf("  Enter ID: ");
     scanf("%s", uid);
@@ -119,69 +147,91 @@ void signup()
     printf("  Enter Your Route: ");
     scanf("%d", &x);
 
-    strcpy(u[n].id, uid);
+    /// Here u is a user structure array which has datatypes(id, pass, route, role);
+    strcpy(u[n].id, uid); /// n(global variable) is new user index number.
     strcpy(u[n].pass,key);
     strcpy(u[n].role, "user");
-    if(x == 1)
-    {
-        strcpy(u[n].route, "Chawkbazar");
-    }
-    else if(x == 2)
-    {
-        strcpy(u[n].route, "Bahaddarhat");
-    }
+    if(x == 1) strcpy(u[n].route, "Chawkbazar");
+    else if(x == 2) strcpy(u[n].route, "Bahaddarhat");
 
     n++;
-
+    writeData();
+    gotoxy(50, 24); printf("Your signup is successfully done!");
+    sleep(1);
+    login();
 }
-
-void login()
+/// stores all data from struct user u[100] to userDB.txt file.
+void writeData()
+{
+    FILE *fr = fopen("userDB.txt", "w");
+    /// below loop is used to put data in userDB.txt file.
+    for(int i = 0; i<n; i++)
+    {
+        fprintf(fr, "%s\n", u[i].id);
+        fprintf(fr, "%s\n", u[i].pass);
+        fprintf(fr, "%s\n", u[i].role);
+        fprintf(fr, "%s\n", u[i].route);
+    }
+    fclose(fr);
+}
+/// adminpanel function is the homepage for admin users. This function used to -
+/// 1. view all users data except passwords.
+/// 2. can add new users to the app.
+/// 3. delete and update user data.
+/// 4. manage bus schedule & bus related other functionalities.
+void adminPanel()
 {
     system("cls");
     logo();
-    char str[100], password[100];
-    int checkingIfUserfound = 0;
-    gotoxy(50, 10);
-    printf("  LOGIN\t\t");
-    gotoxy(50, 12);
-    printf("\t\t");
-    gotoxy(50, 14);
-    printf("\t\t\t");
-    gotoxy(50, 12);
-    printf("  Enter ID: ");
-    scanf("%s", str);
-
-    gotoxy(50, 14);
-    printf("  Enter Password: ");
-    scanf("%s", password);
-
-    for(int i = 0; i<n; i++)
+    int q;
+    gotoxy(24, 10);
+    printf("1. VIEW USERS");
+    gotoxy(24, 12);
+    printf("2. ADD USER");
+    gotoxy(24, 14);
+    printf("3. DELETE USER(ID): ");
+    gotoxy(24, 16);
+    printf("4. UPDATE USER(ID): ");
+    gotoxy(24, 18);
+    printf("Enter Number: ");
+    scanf("%d", &q);
+    if(q==1) view_user();
+    if(q==2) add_user();
+    if(q==3) delete_user();
+    if(q==4) update_user();
+}
+/// view_user() used to print all users data from userDB.txt file
+void view_user()
+{
+    getData();
+    int i, j;
+    /*
+    gotoxy(24, 10);
+    printf("                     ");
+    gotoxy(55, 10);
+    printf("ALL USERS");
+    gotoxy(24, 12);
+    printf("                     ");
+    gotoxy(24, 14);
+    printf("                     ");
+    gotoxy(24, 16);
+    printf("                     ");
+    gotoxy(24, 18);
+    printf("                     ");
+    */
+    for(i=1, j=9; i<n; i++, j+=3)
     {
-        if(strcmp(str,u[i].id) == 0 && strcmp(password, u[i].pass) == 0)
-        {
-            current = i; // takes the value of i, so that we can use it to show profile information
-            checkingIfUserfound = 1;
-            if(strcmp("admin",u[i].role) == 0)
-            {
-                system("cls");
-                adminPanel();
-                break;
-            }
-            else
-            {
-                system("cls");
-                homepage();
-                break;
-            }
-
-        }
+        gotoxy(74, j+i);
+        printf("id:%s\t\t\n", u[i].id);
+        gotoxy(74, j+1+i);
+        printf("pass:%s\t\n", u[i].pass);
+        gotoxy(74, j+2+i);
+        printf("role:%s\t\t\n", u[i].role);
+        gotoxy(74, j+3+i);
+        printf("route:%s\t\n", u[i].route);
     }
-
-    if(checkingIfUserfound == 0)
-    {
-        printf("\n\nWrong Username or Password\n\n");
-    }
-
+    go_back(j);
+    getchar();
 }
 void go_back_user(int j)
 {
@@ -210,13 +260,13 @@ void Myprofile()
     gotoxy(24, 18);
     printf("                    ");
     gotoxy(24, 10);
-    printf("%s\n", u[1].id);
+    printf("%s\n", u[current].id);
     gotoxy(24, 12);
-    printf("%s\n", u[1].pass);
+    printf("%s\n", u[current].pass);
     gotoxy(24, 14);
-    printf("%s\n", u[1].role);
+    printf("%s\n", u[current].role);
     gotoxy(24, 16);
-    printf("%s\n", u[1].route);
+    printf("%s\n", u[current].route);
     FILE *fp = fopen("Bus information.txt","r");
     int seat_available, seat_booked;
     fscanf(fp, "%d", &seat_available); // available seat
@@ -655,47 +705,7 @@ void go_back(int j)
     if(q==0) adminPanel();
     else go_back(j);
 }
-void view_user()
-{
-    getData();
-    int i, j;
-    gotoxy(24, 10);
-    printf("                     ");
-    gotoxy(55, 10);
-    printf("ALL USERS");
-    gotoxy(24, 12);
-    printf("                     ");
-    gotoxy(24, 14);
-    printf("                    ");
-    gotoxy(24, 16);
-    printf("                    ");
-    gotoxy(24, 18);
-    printf("                    ");
-    for(i=1, j=10; i<n; i++, j+=3)
-    {
-        gotoxy(24, j+i);
-        printf("id:%s\t\t\n", u[i].id);
-        gotoxy(24, j+1+i);
-        printf("pass:%s\t\n", u[i].pass);
-        gotoxy(24, j+2+i);
-        printf("role:%s\t\t\n", u[i].role);
-        gotoxy(24, j+3+i);
-        printf("route:%s\t\n", u[i].route);
-        /*printf("frds: %d", u[i].frds);
-        if(u[i].frds>0)
-        {
-            printf("\n");
-            printf("flist: ");
-            for(j=0; j<u[i].frds; j++)
-            {
-                printf("%d ", u[i].flist[j]);
-            }
-        }
-        if(i!=n-1) printf("\n");*/
-    }
-    go_back(j);
-    getchar();
-}
+
 
 void add_user()
 {
@@ -842,28 +852,8 @@ void update_user()
     go_back(15);
 }
 
-void adminPanel()
-{
-    system("cls");
-    logo();
-    int q;
-    gotoxy(24, 10);
-    printf("1. VIEW USERS");
-    gotoxy(24, 12);
-    printf("2. ADD USER");
-    gotoxy(24, 14);
-    printf("3. DELETE USER(ID): ");
-    gotoxy(24, 16);
-    printf("4. UPDATE USER(ID): ");
-    gotoxy(24, 18);
-    printf("Enter Number: ");
-    scanf("%d", &q);
-    if(q==1) view_user();
-    if(q==2) add_user();
-    if(q==3) delete_user();
-    if(q==4) update_user();
-}
 
+/// Initiate page of the app. Users can register or login from here.
 int main()
 {
     system("cls");
@@ -885,9 +875,6 @@ int main()
         break;
     case(2):
         signup();
-        writeData();
-        system("cls");
-        login();
         break;
     default:
         printf("Enter the correct number.");
