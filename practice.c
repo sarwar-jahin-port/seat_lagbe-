@@ -18,12 +18,19 @@ struct User
 };
 struct User u[100];
 
-struct SeatBooking{
+struct SeatBooking
+{
     char seat_name[2][4], uid[20];
     int seat_no;
 };
-
 struct SeatBooking seat[100];
+
+struct SeatNumber
+{
+    char seat[10];
+};
+struct SeatNumber num[100];
+
 
 int n; //global variable for count users
 int current; // global variable for showing data on 'my profile' for particular user1
@@ -31,19 +38,27 @@ char seatArray[50][4];
 //using this for password encryption
 //char key[70] = "PgEfTYaWGHjDAmxQqFLRpCJBownyUKZXkbvzIdshurMilNSVOtec#@_!=.+-*/";
 //char org[70] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-void c_time(){
+void c_time()
+{
     time_t s = time(NULL);
     struct tm* cur_time;
     cur_time= localtime(&s);
     printf("Time: %02d:%02d:%02d", cur_time->tm_hour, cur_time->tm_min, cur_time->tm_sec);
 }
-void logo(){
-    gotoxy(20, 2);printf("   _____ ______       _______   _               _____ ____  ______ ___  \n");
-    gotoxy(20, 3);printf("  / ____|  ____|   /\\|__   __| | |        /\\   / ____|  _ \\|  ____|__ \\ \n");
-    gotoxy(20, 4);printf(" | (___ | |__     /  \\  | |    | |       /  \\ | |  __| |_) | |__     ) |\n");
-    gotoxy(20, 5);printf("  \\___ \\|  __|   / /\\ \\ | |    | |      / /\\ \\| | |_ |  _ <|  __|   / / \n");
-    gotoxy(20, 6);printf("  ____) | |____ / ____ \\| |    | |____ / ____ \\ |__| | |_) | |____ |_|  \n");
-    gotoxy(20, 7);printf(" |_____/|______/_/    \\_\\_|    |______/_/    \\_\\_____|____/|______|(_)  \n");
+void logo()
+{
+    gotoxy(20, 2);
+    printf("   _____ ______       _______   _               _____ ____  ______ ___  \n");
+    gotoxy(20, 3);
+    printf("  / ____|  ____|   /\\|__   __| | |        /\\   / ____|  _ \\|  ____|__ \\ \n");
+    gotoxy(20, 4);
+    printf(" | (___ | |__     /  \\  | |    | |       /  \\ | |  __| |_) | |__     ) |\n");
+    gotoxy(20, 5);
+    printf("  \\___ \\|  __|   / /\\ \\ | |    | |      / /\\ \\| | |_ |  _ <|  __|   / / \n");
+    gotoxy(20, 6);
+    printf("  ____) | |____ / ____ \\| |    | |____ / ____ \\ |__| | |_) | |____ |_|  \n");
+    gotoxy(20, 7);
+    printf(" |_____/|______/_/    \\_\\_|    |______/_/    \\_\\_____|____/|______|(_)  \n");
 }
 
 void getData()
@@ -122,6 +137,7 @@ void signup()
 
 void login()
 {
+    system("cls");
     logo();
     char str[100], password[100];
     int checkingIfUserfound = 0;
@@ -206,19 +222,31 @@ void Myprofile()
     fscanf(fp, "%d", &seat_available); // available seat
     fscanf(fp, "%d", &seat_booked);
     int i=0;
-    for(i = 0; fscanf(fp, "%s", seat[i].uid)!=-1; i++){
-        if((strcmp(seat[i].uid, u[current].id))==0){
+    for(i = 0; fscanf(fp, "%s", seat[i].uid)!=-1; i++)
+    {
+        if((strcmp(seat[i].uid, u[current].id))==0)
+        {
             fscanf(fp, "%d", &seat[i].seat_no);
             seat_no = seat[i].seat_no;
-            for(int j=0;j<seat[i].seat_no;j++){
+            for(int j=0; j<seat[i].seat_no; j++)
+            {
                 fscanf(fp, "%s",seat[i].seat_name[j]);
-                if(j==0) {s1_found=1;strcpy(seat1, seat[i].seat_name[j]);}
-                if(j==1) {s2_found=2;strcpy(seat2, seat[i].seat_name[j]);}
+                if(j==0)
+                {
+                    s1_found=1;
+                    strcpy(seat1, seat[i].seat_name[j]);
+                }
+                if(j==1)
+                {
+                    s2_found=2;
+                    strcpy(seat2, seat[i].seat_name[j]);
+                }
             }
         }
         //printf("entered in loop");
         fscanf(fp, "%d", &seat[i].seat_no);
-        for(int j=0;j<seat[i].seat_no;j++){
+        for(int j=0; j<seat[i].seat_no; j++)
+        {
             fscanf(fp, "%s",seat[i].seat_name[j]);
         }
     }
@@ -234,12 +262,62 @@ void Myprofile()
     go_back_user(12);
     getchar();
 }
-void book_seat(){
+
+void delete_seat(char seatToDelete[])
+{
+
+    FILE *af=fopen("seat_info.txt", "r");
+
+    int i;
+
+    for(i = 0; fscanf(af, "%s", num[i].seat) != -1; i++)
+    {
+
+    }
+
+    fclose(af);
+
+    int position = -1;
+
+    for(int j = 0; j<i; j++)
+    {
+        //temp = user[i].numOfFriend;
+        if(strcmp(seatToDelete, num[j].seat) == 0)
+        {
+            position = j;
+            break;
+        }
+    }
+
+
+    if(position != -1)
+    {
+        for(int x = position; x<i-1; x++)
+        {
+            strcpy(num[x].seat, num[x+1].seat);
+        }
+        i--;
+
+
+        FILE *af = fopen("seat_info.txt", "w");
+        for(int u = 0; u<i; u++)
+        {
+            fprintf(af, "%s\n", num[u].seat);
+        }
+        fclose(af);
+    }
+
+}
+
+
+void book_seat()
+{
     getData();
     printf("book seat function called");
     FILE *af=fopen("seat_info.txt", "r");
-    for(int a=0;fscanf(af, "%s", seatArray[a])!=-1;a++){
-        printf("%s", seatArray[a]);
+    for(int a=0; fscanf(af, "%s", seatArray[a])!=-1; a++)
+    {
+        // printf("%s", seatArray[a]);
     }
     fclose(af);
     /*char seatArray[50][4] = {"1A", "1B", "1C", "1D",
@@ -261,8 +339,10 @@ void book_seat(){
     fscanf(fp, "%d", &seat_available); // available seat
     fscanf(fp, "%d", &seat_booked);
     int i=0;
-    for(i = 0; fscanf(fp, "%s", seat[i].uid)!=-1; i++){
-        if((strcmp(seat[i].uid, u[current].id))==0){
+    for(i = 0; fscanf(fp, "%s", seat[i].uid)!=-1; i++)
+    {
+        if((strcmp(seat[i].uid, u[current].id))==0)
+        {
             printf("You have already booked your seat.");
             printf("%s", seat[i].uid);
             printf("%s", u[current].id);
@@ -270,7 +350,8 @@ void book_seat(){
         }
         printf("entered in loop");
         fscanf(fp, "%d", &seat[i].seat_no);
-        for(int j=0;j<seat[i].seat_no;j++){
+        for(int j=0; j<seat[i].seat_no; j++)
+        {
             fscanf(fp, "%s",seat[i].seat_name[j]);
         }
     }
@@ -285,61 +366,226 @@ void book_seat(){
 
 
     FILE *fr = fopen("Bus information.txt","w");
-        if(user_input == 1){
-            printf("asked for one seat");
-            seat_available--;
-            strcpy(seat[i].uid,u[current].id);
-            seat[i].seat_no=1;
-            strcpy(seat[i].seat_name, seatArray[seat_booked]);
-            seat_booked++;
-            //printf("%s\n", seat[i].uid);
-            //printf("%d\n", seat[i].seat_no);
-            //printf("%s\n", seat[i].seat_name);
-            fprintf(fr,"%d\n", seat_available);
-            fprintf(fr, "%d\n", seat_booked);
+    if(user_input == 1)
+    {
+        printf("asked for one seat");
+        seat_available--;
+        strcpy(seat[i].uid,u[current].id);
+        seat[i].seat_no=1;
+        strcpy(seat[i].seat_name, seatArray[0]);
+        seat_booked++;
+        printf("%s\n", seat[i].uid);
+        printf("%d\n", seat[i].seat_no);
+        printf("%s\n", seat[i].seat_name);
+        fprintf(fr,"%d\n", seat_available);
+        fprintf(fr, "%d\n", seat_booked);
 
-            for(int x = 0; x<=i; x++){
-                fprintf(fr, "%s\n", seat[x].uid);
-                fprintf(fr, "%d\n", seat[x].seat_no);
-                for(int y=x; y<x+1 ;y++){
-                    if(seat[x].seat_no==1) fprintf(fr, "%s\n", seat[y].seat_name[0]);
-                    if(seat[x].seat_no==2){
-                        fprintf(fr, "%s ", seat[y].seat_name[0]);
-                        fprintf(fr, "%s\n", seat[y].seat_name[1]);
-                    }
+        for(int x = 0; x<=i; x++)
+        {
+            fprintf(fr, "%s\n", seat[x].uid);
+            fprintf(fr, "%d\n", seat[x].seat_no);
+            for(int y=x; y<x+1 ; y++)
+            {
+                if(seat[x].seat_no==1)
+                {
+                    delete_seat(seat[y].seat_name[0]);
+                    fprintf(fr, "%s\n", seat[y].seat_name[0]);
+
+
+                }
+                if(seat[x].seat_no==2)
+                {
+                    delete_seat(seat[y].seat_name[0]);
+                    fprintf(fr, "%s ", seat[y].seat_name[0]);
+                    fprintf(fr, "%s\n", seat[y].seat_name[1]);
+                }
+
+            }
+        }
+    }
+    else if(user_input == 2)
+    {
+        printf("asked for two seat");
+        seat_available-=2;
+        //printf("%s", u[current].id);
+        strcpy(seat[i].uid,u[current].id);
+        //printf("%s", seat[i].uid);
+        seat[i].seat_no=2;
+        strcpy(seat[i].seat_name[0], seatArray[0]);
+        strcpy(seat[i].seat_name[1], seatArray[1]);
+        seat_booked+=2;
+        //printf("%s\n", seat[i].uid);
+        //printf("%d\n", seat[i].seat_no);
+        //printf("%s\n", seat[i].seat_name[0]);
+        //printf("%s\n", seat[i].seat_name[1]);
+        fprintf(fr,"%d\n", seat_available);
+        fprintf(fr, "%d\n", seat_booked);
+        for(int x = 0; x<=i; x++)
+        {
+            fprintf(fr, "%s\n", seat[x].uid);
+            fprintf(fr, "%d\n", seat[x].seat_no);
+            for(int y=x; y<x+1 ; y++)
+            {
+                if(seat[x].seat_no==1){
+                    delete_seat(seat[y].seat_name[0]);
+                    fprintf(fr, "%s\n", seat[y].seat_name[0]);
+                }
+                if(seat[x].seat_no==2)
+                {
+                    fprintf(fr, "%s", seat[y].seat_name[0]);
+                    fprintf(fr, " %s\n", seat[y].seat_name[1]);
+
+                    delete_seat(seat[y].seat_name[0]);
+                    delete_seat(seat[y].seat_name[1]);
                 }
             }
         }
-        else if(user_input == 2){
-            printf("asked for two seat");
-            seat_available-=2;
-            //printf("%s", u[current].id);
-            strcpy(seat[i].uid,u[current].id);
-            //printf("%s", seat[i].uid);
-            seat[i].seat_no=2;
-            strcpy(seat[i].seat_name[0], seatArray[seat_booked]);
-            strcpy(seat[i].seat_name[1], seatArray[seat_booked+1]);
-            seat_booked+=2;
-            //printf("%s\n", seat[i].uid);
-            //printf("%d\n", seat[i].seat_no);
-            //printf("%s\n", seat[i].seat_name[0]);
-            //printf("%s\n", seat[i].seat_name[1]);
-            fprintf(fr,"%d\n", seat_available);
-            fprintf(fr, "%d\n", seat_booked);
-            for(int x = 0; x<=i; x++){
-                fprintf(fr, "%s\n", seat[x].uid);
-                fprintf(fr, "%d\n", seat[x].seat_no);
-                for(int y=x; y<x+1 ;y++){
-                    if(seat[x].seat_no==1) fprintf(fr, "%s\n", seat[y].seat_name[0]);
-                    if(seat[x].seat_no==2){
-                        fprintf(fr, "%s", seat[y].seat_name[0]);
-                        fprintf(fr, " %s\n", seat[y].seat_name[1]);
-                    }
-                }
-            }
-        }
-        fclose(fr);
+    }
+    fclose(fr);
     go_back_user(10);
+}
+
+
+void seat_cancel()
+{
+
+    FILE *af = fopen("seat_info.txt", "r");
+
+    int n;
+
+    for(n = 0; fscanf(af, "%s", num[n].seat) != -1; n++)
+    {
+
+    }
+
+    fclose(af);
+
+    int seat_available, seat_booked;
+
+    FILE *fp = fopen("Bus information.txt","r");
+    fscanf(fp, "%d", &seat_available); // available seat
+    fscanf(fp, "%d", &seat_booked);
+    int i;
+    for(i = 0; fscanf(fp, "%s", seat[i].uid)!=-1; i++)
+    {
+        fscanf(fp, "%d", &seat[i].seat_no);
+        for(int j=0; j<seat[i].seat_no; j++)
+        {
+            fscanf(fp, "%s",seat[i].seat_name[j]);
+        }
+    }
+    fclose(fp);
+
+    for(int x = 0; x<i; x++)
+    {
+        if(strcmp(u[current].id, seat[x].uid) == 0)
+        {
+            if(seat[x].seat_no == 1)
+            {
+
+                strcpy(num[n].seat, seat[x].seat_name[0]);
+                n++;
+                FILE *af = fopen("seat_info.txt", "w");
+
+                for(int w = 0; w<n ; w++)
+                {
+                    fprintf(af, "%s\n", num[w].seat);
+                }
+                fclose(af);
+
+                int position = x;
+
+        for(int z = position; z<i-1; z++)
+        {
+            seat[z] = seat[z+1];
+        }
+        i--;
+
+
+        FILE *fr = fopen("Bus information.txt", "w");
+        seat_available++;
+        seat_booked--;
+
+        fprintf(fr,"%d\n", seat_available);
+        fprintf(fr, "%d\n", seat_booked);
+
+        for(int m = 0; m<i; m++)
+        {
+            fprintf(fr, "%s\n", seat[m].uid);
+            fprintf(fr, "%d\n", seat[m].seat_no);
+
+            if(seat[m].seat_no == 1){
+               for(int y=m; y<m+1 ; y++)
+            {
+                fprintf(fr, "%s\n", seat[y].seat_name[0]);
+            }
+            }
+            if(seat[m].seat_no == 2){
+                 for(int y=m; y<m+1 ; y++)
+            {
+                fprintf(fr, "%s ", seat[y].seat_name[0]);
+                fprintf(fr, "%s\n", seat[y].seat_name[1]);
+            }
+            }
+
+    }
+            fclose(fr);
+
+            }
+            if(seat[x].seat_no == 2)
+            {
+
+                strcpy(num[n].seat, seat[x].seat_name[0]);
+                strcpy(num[n+1].seat, seat[x].seat_name[1]);
+                n+=2;
+
+                FILE *af = fopen("seat_info.txt", "w");
+
+                for(int w = 0; w<n ; w++)
+                {
+                    fprintf(af, "%s\n", num[w].seat);
+                }
+                fclose(af);
+
+                int position = x;
+
+        for(int z = position; z<i-1; z++)
+        {
+            seat[z] = seat[z+1];
+        }
+        i--;
+
+
+        FILE *fr = fopen("Bus information.txt", "w");
+        seat_available++;
+        seat_booked--;
+
+        fprintf(fr,"%d\n", seat_available);
+        fprintf(fr, "%d\n", seat_booked);
+
+        for(int m = 0; m<i; m++)
+        {
+            fprintf(fr, "%s\n", seat[m].uid);
+            fprintf(fr, "%d\n", seat[m].seat_no);
+            if(seat[m].seat_no == 1){
+               for(int y=m; y<m+1 ; y++)
+            {
+                fprintf(fr, "%s\n", seat[y].seat_name[0]);
+            }
+            }
+            if(seat[m].seat_no == 2){
+                 for(int y=m; y<m+1 ; y++)
+            {
+                fprintf(fr, "%s ", seat[y].seat_name[0]);
+                fprintf(fr, "%s\n", seat[y].seat_name[1]);
+            }
+            }
+    }
+            fclose(fr);
+            }
+        }
+    }
+
 }
 
 void Cancelseat()
@@ -357,17 +603,19 @@ void Cancelseat()
     gotoxy(24, 18);
     printf("                    ");
     char confirm;
-    gotoxy(24, 10);printf("Click X to cancel!\n");
-    gotoxy(24, 12);scanf(" %c",&confirm);
+    gotoxy(24, 10);
+    printf("Click X to cancel!\n");
+    gotoxy(24, 12);
+    scanf(" %c",&confirm);
     //printf("%c", confirm);
     if(confirm==88 || confirm==120)
     {
-        FILE*fp=fopen("Bus information.txt","w");
-        fclose(fp);
+       seat_cancel();
     }
     else
     {
-        gotoxy(24, 12);printf("Enter Correctly.\n");
+        gotoxy(24, 12);
+        printf("Enter Correctly.\n");
     }
     go_back_user(6);
 }
@@ -375,7 +623,8 @@ void Cancelseat()
 void homepage()
 {
     system("cls");
-    gotoxy(94, 10); c_time();
+    gotoxy(94, 10);
+    c_time();
     logo();
     gotoxy(24, 10);
     printf("1. MY PROFILE");
@@ -386,12 +635,16 @@ void homepage()
     gotoxy(24, 16);
     printf("4. FAQ");
     gotoxy(24, 18);
+    printf("5. LOG OUT");
+    gotoxy(24, 20);
     printf("Enter Number: ");
     int q;
     scanf("%d", &q);
     if(q==1) Myprofile();
     if(q==2) book_seat();
     if(q==3) Cancelseat();
+    //if(q==4) faqBot();
+    if(q==5) main();
 }
 void go_back(int j)
 {
@@ -613,10 +866,12 @@ void adminPanel()
 
 int main()
 {
+    system("cls");
     int q;
     getData();
     logo();
-    gotoxy(50, 10);printf("  1. Login\n");
+    gotoxy(50, 10);
+    printf("  1. Login\n");
     gotoxy(50, 12);
     printf("  2. Register\n");
     gotoxy(50, 14);
@@ -634,7 +889,8 @@ int main()
         system("cls");
         login();
         break;
-    default: printf("Enter the correct number.");
+    default:
+        printf("Enter the correct number.");
     }
     //homepage();
     //adminPanel();
