@@ -283,6 +283,56 @@ void view_user()
     go_back(j);
     getchar();
 }
+/// add_user used for add new users in userDB.txt file
+void add_user()
+{
+    getData();
+    gotoxy(24, 10);
+    printf("                             ");
+    gotoxy(55, 10);
+    printf("ADD USER");
+    gotoxy(24, 12);
+    printf("                             ");
+    gotoxy(24, 14);
+    printf("                             ");
+    gotoxy(24, 16);
+    printf("                             ");
+    gotoxy(24, 18);
+    printf("                             ");
+    //printf("nextind=%d", exi.nextind);
+    int x;
+    char uid[10], key[100], route[100];
+    gotoxy(24, 12);
+    printf("  Enter ID: ");
+    scanf("%s", uid);
+    gotoxy(24, 14);
+    printf("  Enter Password: ");
+    scanf("%s", key);
+
+    gotoxy(24, 16);
+    printf("  Routes Available:\n");
+    gotoxy(24, 18);
+    printf("  1. IIUC - Chawkbazar\n");
+    gotoxy(24, 20);
+    printf("  2. IIUC - Bahaddarhat\n");
+    gotoxy(24, 22);
+    printf("  Enter Your Route: ");
+    scanf("%d", &x);
+    strcpy(u[n].id, uid);
+    strcpy(u[n].pass,key);
+    strcpy(u[n].role, "user");
+    if(x == 1)
+    {
+        strcpy(u[n].route, "Chawkbazar");
+    }
+    else if(x == 2)
+    {
+        strcpy(u[n].route, "Bahaddarhat");
+    }
+    n++;
+    writeData();
+    go_back(17);
+}
 void go_back_user(int j)
 {
     int q;
@@ -790,55 +840,7 @@ void go_back(int j)
 }
 
 
-void add_user()
-{
-    getData();
-    gotoxy(24, 10);
-    printf("                     ");
-    gotoxy(55, 10);
-    printf("ADD USER");
-    gotoxy(24, 12);
-    printf("                             ");
-    gotoxy(24, 14);
-    printf("                             ");
-    gotoxy(24, 16);
-    printf("                             ");
-    gotoxy(24, 18);
-    printf("                             ");
-    //printf("nextind=%d", exi.nextind);
-    int x;
-    char uid[10], key[100], route[100];
-    gotoxy(24, 12);
-    printf("  Enter ID: ");
-    scanf("%s", uid);
-    gotoxy(24, 14);
-    printf("  Enter Password: ");
-    scanf("%s", key);
 
-    gotoxy(24, 16);
-    printf("  Routes Available:\n");
-    gotoxy(24, 18);
-    printf("  1. IIUC - Chawkbazar\n");
-    gotoxy(24, 20);
-    printf("  2. IIUC - Bahaddarhat\n");
-    gotoxy(24, 22);
-    printf("  Enter Your Route: ");
-    scanf("%d", &x);
-    strcpy(u[n].id, uid);
-    strcpy(u[n].pass,key);
-    strcpy(u[n].role, "user");
-    if(x == 1)
-    {
-        strcpy(u[n].route, "Chawkbazar");
-    }
-    else if(x == 2)
-    {
-        strcpy(u[n].route, "Bahaddarhat");
-    }
-    n++;
-    writeData();
-    go_back(17);
-}
 
 int search_by_id()
 {
@@ -939,6 +941,7 @@ void update_user()
 int main()
 {
     system("cls");
+    printf("\e[?25l"); /// used to hide cursor in console
     getData();
     logo();
     int a_position = 1, keyPressed = 0;
