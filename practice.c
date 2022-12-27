@@ -51,16 +51,20 @@ void c_time()
     cur_time= localtime(&s);
     gotoxy(94, 10);
     printf("Time: %02d:%02d:%02d", cur_time->tm_hour, cur_time->tm_min, cur_time->tm_sec);
-   // }
+    // }
 }
 //This function is used for Operating Menu by upper and lower key
 // It improves user experience
-void menuArrow(int realPosition, int arrowPosition){
-        if(realPosition == arrowPosition){
-            printf(" ==>> - ");
-        }else{
-            printf("        ");
-        }
+void menuArrow(int realPosition, int arrowPosition)
+{
+    if(realPosition == arrowPosition)
+    {
+        printf(" ==>> - ");
+    }
+    else
+    {
+        printf("        ");
+    }
 }
 /// Logo for app.
 void logo()
@@ -99,8 +103,8 @@ void login()
 {
     system("cls");
     logo();
-    char str[100], password[100];
-    int checkingIfUserfound = 0;
+    char u_id[100], password[100], ch;
+    int checkingIfUserfound = 0, index=0;
     gotoxy(50, 10);
     printf("  LOGIN\t\t");
     gotoxy(50, 12);
@@ -109,25 +113,42 @@ void login()
     printf("\t\t\t");
     gotoxy(50, 12);
     printf("  Enter ID: ");
-    scanf("%s", str);
+    scanf("%s", u_id);
     gotoxy(50, 14);
     printf("  Enter Password: ");
-    scanf("%s", password);
+    /* 13 is ASCII value of Enter key */
+    while((ch = getch()) != 13)
+    {
+        if(index < 0) index = 0;
+        /* 8 is ASCII value of BACKSPACE character */
+        if(ch == 8)
+        {
+            putch('\b');
+            putch(' ');
+            putch('\b');
+            index--;
+            continue;
+        }
+        password[index++] = ch;
+        putch('*');
+    }
+    password[index] = '\0';
     /// the below loop will continue upto total user number in userDB.txt file
     for(int i = 0; i<n; i++)
     {
-        if(strcmp(str,u[i].id) == 0 && strcmp(password, u[i].pass) == 0)
+        if(strcmp(u_id,u[i].id) == 0 && strcmp(password, u[i].pass) == 0)
         {
             current = i; /// here current represents the logged in user index number in userDB.txt file.
             checkingIfUserfound = 1;
-            if(strcmp("admin",u[i].role) == 0){adminPanel();break;}
-            else{homepage();break;}
+            if(strcmp("admin",u[i].role) == 0){ adminPanel(); break;}
+            else{homepage(); break;}
         }
     }
 
     if(checkingIfUserfound == 0)
     {
-        gotoxy(52, 16);printf("Wrong Username or Password entered.");
+        gotoxy(52, 16);
+        printf("Wrong Username or Password entered.");
         sleep(1);
         login();
     }
@@ -171,7 +192,8 @@ void signup()
 
     n++;
     writeData();
-    gotoxy(50, 24); printf("Your signup is successfully done!");
+    gotoxy(50, 24);
+    printf("Your signup is successfully done!");
     sleep(1);
     login();
 }
@@ -198,42 +220,57 @@ void adminPanel()
 {
     system("cls");
     logo();
-    int q;
-    gotoxy(24, 10);
-    printf("1. VIEW USERS");
-    gotoxy(24, 12);
-    printf("2. ADD USER");
-    gotoxy(24, 14);
-    printf("3. DELETE USER(ID): ");
-    gotoxy(24, 16);
-    printf("4. UPDATE USER(ID): ");
-    gotoxy(24, 18);
-    printf("Enter Number: ");
-    scanf("%d", &q);
-    if(q==1) view_user();
-    if(q==2) add_user();
-    if(q==3) delete_user();
-    if(q==4) update_user();
+    printf("\e[?25l"); /// used to hide cursor in console
+    int a_position = 1, keyPressed = 0;
+
+    // 13 is the ASCII value of Enter KEY
+    while(keyPressed != 13)
+    {
+        //system("cls");
+        gotoxy(24, 10);
+        menuArrow(1,a_position);
+        printf("1. VIEW USERS\n");
+        gotoxy(24, 12);
+        menuArrow(2,a_position);
+        printf("2. ADD USER\n");
+        gotoxy(24, 14);
+        menuArrow(3,a_position);
+        printf("3. DELETE USER(ID): ");
+        gotoxy(24, 16);
+        menuArrow(4,a_position);
+        printf("4. UPDATE USER(ID): ");
+
+        keyPressed = getch();
+        if(keyPressed == 80 && a_position != 4) a_position++;
+        else if(keyPressed == 72 && a_position != 1) a_position--;
+        else a_position = a_position;
+    }
+
+    switch(a_position)
+    {
+    case(1):
+        view_user();
+        break;
+    case(2):
+        add_user();
+        break;
+    case(3):
+        printf("\e[?25h"); /// used to show hidden cursor in console.
+        delete_user();
+        break;
+    case(4):
+        printf("\e[?25h"); /// used to show hidden cursor in console.
+        update_user();
+        break;
+    default:
+        printf("SYSTEM ERROR!");
+    }
 }
 /// view_user() used to print all users data from userDB.txt file
 void view_user()
 {
     getData();
     int i, j;
-    /*
-    gotoxy(24, 10);
-    printf("                     ");
-    gotoxy(55, 10);
-    printf("ALL USERS");
-    gotoxy(24, 12);
-    printf("                     ");
-    gotoxy(24, 14);
-    printf("                     ");
-    gotoxy(24, 16);
-    printf("                     ");
-    gotoxy(24, 18);
-    printf("                     ");
-    */
     for(i=1, j=9; i<n; i++, j+=3)
     {
         gotoxy(74, j+i);
@@ -492,7 +529,8 @@ void book_seat()
             fprintf(fr, "%d\n", seat[x].seat_no);
             for(int y=x; y<x+1 ; y++)
             {
-                if(seat[x].seat_no==1){
+                if(seat[x].seat_no==1)
+                {
                     delete_seat(seat[y].seat_name[0]);
                     fprintf(fr, "%s\n", seat[y].seat_name[0]);
                 }
@@ -561,41 +599,43 @@ void seat_cancel()
 
                 int position = x;
 
-        for(int z = position; z<i-1; z++)
-        {
-            seat[z] = seat[z+1];
-        }
-        i--;
+                for(int z = position; z<i-1; z++)
+                {
+                    seat[z] = seat[z+1];
+                }
+                i--;
 
 
-        FILE *fr = fopen("Bus information.txt", "w");
-        seat_available++;
-        seat_booked--;
+                FILE *fr = fopen("Bus information.txt", "w");
+                seat_available++;
+                seat_booked--;
 
-        fprintf(fr,"%d\n", seat_available);
-        fprintf(fr, "%d\n", seat_booked);
+                fprintf(fr,"%d\n", seat_available);
+                fprintf(fr, "%d\n", seat_booked);
 
-        for(int m = 0; m<i; m++)
-        {
-            fprintf(fr, "%s\n", seat[m].uid);
-            fprintf(fr, "%d\n", seat[m].seat_no);
+                for(int m = 0; m<i; m++)
+                {
+                    fprintf(fr, "%s\n", seat[m].uid);
+                    fprintf(fr, "%d\n", seat[m].seat_no);
 
-            if(seat[m].seat_no == 1){
-               for(int y=m; y<m+1 ; y++)
-            {
-                fprintf(fr, "%s\n", seat[y].seat_name[0]);
-            }
-            }
-            if(seat[m].seat_no == 2){
-                 for(int y=m; y<m+1 ; y++)
-            {
-                fprintf(fr, "%s ", seat[y].seat_name[0]);
-                fprintf(fr, "%s\n", seat[y].seat_name[1]);
-            }
-            }
+                    if(seat[m].seat_no == 1)
+                    {
+                        for(int y=m; y<m+1 ; y++)
+                        {
+                            fprintf(fr, "%s\n", seat[y].seat_name[0]);
+                        }
+                    }
+                    if(seat[m].seat_no == 2)
+                    {
+                        for(int y=m; y<m+1 ; y++)
+                        {
+                            fprintf(fr, "%s ", seat[y].seat_name[0]);
+                            fprintf(fr, "%s\n", seat[y].seat_name[1]);
+                        }
+                    }
 
-    }
-            fclose(fr);
+                }
+                fclose(fr);
 
             }
             if(seat[x].seat_no == 2)
@@ -615,39 +655,41 @@ void seat_cancel()
 
                 int position = x;
 
-        for(int z = position; z<i-1; z++)
-        {
-            seat[z] = seat[z+1];
-        }
-        i--;
+                for(int z = position; z<i-1; z++)
+                {
+                    seat[z] = seat[z+1];
+                }
+                i--;
 
 
-        FILE *fr = fopen("Bus information.txt", "w");
-        seat_available++;
-        seat_booked--;
+                FILE *fr = fopen("Bus information.txt", "w");
+                seat_available++;
+                seat_booked--;
 
-        fprintf(fr,"%d\n", seat_available);
-        fprintf(fr, "%d\n", seat_booked);
+                fprintf(fr,"%d\n", seat_available);
+                fprintf(fr, "%d\n", seat_booked);
 
-        for(int m = 0; m<i; m++)
-        {
-            fprintf(fr, "%s\n", seat[m].uid);
-            fprintf(fr, "%d\n", seat[m].seat_no);
-            if(seat[m].seat_no == 1){
-               for(int y=m; y<m+1 ; y++)
-            {
-                fprintf(fr, "%s\n", seat[y].seat_name[0]);
-            }
-            }
-            if(seat[m].seat_no == 2){
-                 for(int y=m; y<m+1 ; y++)
-            {
-                fprintf(fr, "%s ", seat[y].seat_name[0]);
-                fprintf(fr, "%s\n", seat[y].seat_name[1]);
-            }
-            }
-    }
-            fclose(fr);
+                for(int m = 0; m<i; m++)
+                {
+                    fprintf(fr, "%s\n", seat[m].uid);
+                    fprintf(fr, "%d\n", seat[m].seat_no);
+                    if(seat[m].seat_no == 1)
+                    {
+                        for(int y=m; y<m+1 ; y++)
+                        {
+                            fprintf(fr, "%s\n", seat[y].seat_name[0]);
+                        }
+                    }
+                    if(seat[m].seat_no == 2)
+                    {
+                        for(int y=m; y<m+1 ; y++)
+                        {
+                            fprintf(fr, "%s ", seat[y].seat_name[0]);
+                            fprintf(fr, "%s\n", seat[y].seat_name[1]);
+                        }
+                    }
+                }
+                fclose(fr);
             }
         }
     }
@@ -676,7 +718,7 @@ void Cancelseat()
     //printf("%c", confirm);
     if(confirm==88 || confirm==120)
     {
-       seat_cancel();
+        seat_cancel();
     }
     else
     {
@@ -694,29 +736,38 @@ void homepage()
     int a_position = 1, keyPressed = 0;
 
     // 13 is the ASCII value of Enter KEY
-    while(keyPressed != 13){
-    gotoxy(24, 10);
-    menuArrow(1,a_position); printf("1. MY PROFILE");
-    gotoxy(24, 12);
-    menuArrow(2,a_position); printf("2. BOOK YOUR SEAT");
-    gotoxy(24, 14);
-    menuArrow(3,a_position); printf("3. CANCEL YOUR SEAT");
-    gotoxy(24, 16);
-    menuArrow(4,a_position); printf("4. FAQ");
-    gotoxy(24, 18);
-    menuArrow(5,a_position); printf("5. LOG OUT");
+    while(keyPressed != 13)
+    {
+        gotoxy(24, 10);
+        menuArrow(1,a_position);
+        printf("1. MY PROFILE");
+        gotoxy(24, 12);
+        menuArrow(2,a_position);
+        printf("2. BOOK YOUR SEAT");
+        gotoxy(24, 14);
+        menuArrow(3,a_position);
+        printf("3. CANCEL YOUR SEAT");
+        gotoxy(24, 16);
+        menuArrow(4,a_position);
+        printf("4. FAQ");
+        gotoxy(24, 18);
+        menuArrow(5,a_position);
+        printf("5. LOG OUT");
 
-    keyPressed = getch();
+        keyPressed = getch();
 
-    if(keyPressed == 80 && a_position != 5){
-        a_position++;
-    }
-    else if(keyPressed == 72 && a_position != 1){
-        a_position--;
-    }
-    else{
-        a_position = a_position;
-    }
+        if(keyPressed == 80 && a_position != 5)
+        {
+            a_position++;
+        }
+        else if(keyPressed == 72 && a_position != 1)
+        {
+            a_position--;
+        }
+        else
+        {
+            a_position = a_position;
+        }
     }
 
     c_time();
@@ -747,13 +798,13 @@ void add_user()
     gotoxy(55, 10);
     printf("ADD USER");
     gotoxy(24, 12);
-    printf("                     ");
+    printf("                             ");
     gotoxy(24, 14);
-    printf("                    ");
+    printf("                             ");
     gotoxy(24, 16);
-    printf("                    ");
+    printf("                             ");
     gotoxy(24, 18);
-    printf("                    ");
+    printf("                             ");
     //printf("nextind=%d", exi.nextind);
     int x;
     char uid[10], key[100], route[100];
@@ -811,7 +862,7 @@ int search_by_id()
 void delete_user()
 {
     int searched_ind;
-    gotoxy(43, 14);
+    gotoxy(51, 14);
     searched_ind=search_by_id();
     //printf("%d", searched_ind);
 
@@ -835,7 +886,7 @@ void delete_user()
 void update_user()
 {
     int searched_ind;
-    gotoxy(43, 16);
+    gotoxy(51, 16);
     searched_ind=search_by_id();
     //printf("%d", searched_ind);
 
@@ -888,31 +939,26 @@ void update_user()
 int main()
 {
     system("cls");
-    int a_position = 1, keyPressed = 0;
     getData();
     logo();
+    int a_position = 1, keyPressed = 0;
 
     // 13 is the ASCII value of Enter KEY
-    while(keyPressed != 13){
-    //system("cls");
-    gotoxy(45, 10);
-    menuArrow(1,a_position); printf("1. LOGIN\n");
-    gotoxy(45, 12);
-    menuArrow(2,a_position);printf("2. REGISTER\n");
+    while(keyPressed != 13)
+    {
+        //system("cls");
+        gotoxy(45, 10);
+        menuArrow(1,a_position);
+        printf("1. LOGIN\n");
+        gotoxy(45, 12);
+        menuArrow(2,a_position);
+        printf("2. REGISTER\n");
 
-    keyPressed = getch();
-
-    if(keyPressed == 80 && a_position != 2){
-        a_position++;
+        keyPressed = getch();
+        if(keyPressed == 80 && a_position != 2) a_position++;
+        else if(keyPressed == 72 && a_position != 1) a_position--;
+        else a_position = a_position;
     }
-    else if(keyPressed == 72 && a_position != 1){
-        a_position--;
-    }
-    else{
-        a_position = a_position;
-    }
-    }
-
     switch(a_position)
     {
     case(1):
