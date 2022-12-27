@@ -199,6 +199,7 @@ void adminPanel()
     system("cls");
     logo();
     int q;
+
     gotoxy(24, 10);
     printf("1. VIEW USERS");
     gotoxy(24, 12);
@@ -248,13 +249,13 @@ void view_user()
 }
 void go_back_user(int j)
 {
-    int q;
-    gotoxy(24, j+7);
-    printf("Press 0 to return: ");
-    scanf("%d", &q);
-    if(q==0) homepage();
+    gotoxy(24, j+8);
+    printf("Press 0 to Return ");
+    int q = getch();
+    if(q==48) homepage();
     else go_back(j);
 }
+
 void Myprofile()
 {
 
@@ -378,12 +379,14 @@ void delete_seat(char seatToDelete[])
 
 void book_seat()
 {
+    system("cls");
+    int a_position = 1, keyPressed = 0;
     getData();
-    printf("book seat function called");
+    logo();
+
     FILE *af=fopen("seat_info.txt", "r");
     for(int a=0; fscanf(af, "%s", seatArray[a])!=-1; a++)
     {
-        // printf("%s", seatArray[a]);
     }
     fclose(af);
     /*char seatArray[50][4] = {"1A", "1B", "1C", "1D",
@@ -396,9 +399,7 @@ void book_seat()
                              "8A", "8B", "8C", "8D",
                              "9A", "9B", "9C", "9D",
                              "10A", "10B", "10C", "10D"};*/ // total seat 40
-    /*for(int i =0;i<40;i++){
-        printf("%s\n", seatArray[i]);
-    }*/
+
     int seat_available, seat_booked, user_input;
 
     FILE *fp = fopen("Bus information.txt","r");
@@ -409,12 +410,9 @@ void book_seat()
     {
         if((strcmp(seat[i].uid, u[current].id))==0)
         {
-            printf("You have already booked your seat.");
-            printf("%s", seat[i].uid);
-            printf("%s", u[current].id);
+            printf("YOU ALREADY BOOKED SEAT");
             go_back_user(10);
         }
-        printf("entered in loop");
         fscanf(fp, "%d", &seat[i].seat_no);
         for(int j=0; j<seat[i].seat_no; j++)
         {
@@ -422,27 +420,43 @@ void book_seat()
         }
     }
 
-    printf("%d", i);
     fclose(fp);
-    printf("How many seats do you want?\n");
-    printf("1.One\n");
-    printf("2.Two\n");
-    printf("Enter Number: ");
-    scanf("%d", &user_input);
 
+      // 13 is the ASCII value of Enter KEY
+    while(keyPressed != 13){
+    //system("cls");
+    gotoxy(45,10);
+    printf("SELECT NUMBER OF SEATS -");
+    gotoxy(45,12);
+    menuArrow(1,a_position); printf("1.ONE SEAT");
+    gotoxy(45, 14);
+    menuArrow(2,a_position); printf("2.TWO SEAT");
+
+
+    keyPressed = getch();
+
+    if(keyPressed == 80 && a_position != 2){
+        a_position++;
+    }
+    else if(keyPressed == 72 && a_position != 1){
+        a_position--;
+    }
+    else{
+        a_position = a_position;
+    }
+    }
 
     FILE *fr = fopen("Bus information.txt","w");
-    if(user_input == 1)
+    if(a_position == 1)
     {
-        printf("asked for one seat");
         seat_available--;
         strcpy(seat[i].uid,u[current].id);
         seat[i].seat_no=1;
         strcpy(seat[i].seat_name, seatArray[0]);
         seat_booked++;
-        printf("%s\n", seat[i].uid);
-        printf("%d\n", seat[i].seat_no);
-        printf("%s\n", seat[i].seat_name);
+
+        gotoxy(40, 16);
+        printf("SEAT NUMBER- %s BOOKED SUCCESSFULLY", seat[i].seat_name);
         fprintf(fr,"%d\n", seat_available);
         fprintf(fr, "%d\n", seat_booked);
 
@@ -469,9 +483,8 @@ void book_seat()
             }
         }
     }
-    else if(user_input == 2)
+    else if(a_position == 2)
     {
-        printf("asked for two seat");
         seat_available-=2;
         //printf("%s", u[current].id);
         strcpy(seat[i].uid,u[current].id);
@@ -480,10 +493,10 @@ void book_seat()
         strcpy(seat[i].seat_name[0], seatArray[0]);
         strcpy(seat[i].seat_name[1], seatArray[1]);
         seat_booked+=2;
-        //printf("%s\n", seat[i].uid);
-        //printf("%d\n", seat[i].seat_no);
-        //printf("%s\n", seat[i].seat_name[0]);
-        //printf("%s\n", seat[i].seat_name[1]);
+
+        gotoxy(40, 16);
+        printf("SEAT NUMBER- %s %s BOOKED SUCCESSFULLY", seat[i].seat_name[0],seat[i].seat_name[1]);
+
         fprintf(fr,"%d\n", seat_available);
         fprintf(fr, "%d\n", seat_booked);
         for(int x = 0; x<=i; x++)
@@ -514,7 +527,6 @@ void book_seat()
 
 void seat_cancel()
 {
-
     FILE *af = fopen("seat_info.txt", "r");
 
     int n;
@@ -659,18 +671,18 @@ void Cancelseat()
     gotoxy(24, 10);
     printf("                     ");
     gotoxy(55, 10);
-    printf("                     ");
+    printf("                           ");
     gotoxy(24, 12);
-    printf("                     ");
+    printf("                           ");
     gotoxy(24, 14);
-    printf("                    ");
+    printf("                           ");
     gotoxy(24, 16);
     printf("                    ");
     gotoxy(24, 18);
     printf("                    ");
     char confirm;
     gotoxy(24, 10);
-    printf("Click X to cancel!\n");
+    printf("Enter (X) to Cancel!");
     gotoxy(24, 12);
     scanf(" %c",&confirm);
     //printf("%c", confirm);
@@ -682,8 +694,27 @@ void Cancelseat()
     {
         gotoxy(24, 12);
         printf("Enter Correctly.\n");
+        sleep(1);
+        Cancelseat();
     }
     go_back_user(6);
+}
+
+void credits(){
+system("cls");
+logo();
+
+gotoxy(45,10);printf("==:DEVELOPED BY:==");
+gotoxy(45,12);printf("   SARWAR JAHIN");
+gotoxy(45,13);printf("     C223143");
+gotoxy(45,15);printf("  SHAHARIAR RIJON");
+gotoxy(45,16);printf("     C223155");
+gotoxy(45,18);printf("   ANAYET ULLAH");
+gotoxy(45,19);printf("     C2231xx");
+gotoxy(45,21);printf("    MAINUR RAHAT");
+gotoxy(45,22);printf("     C2231xx");
+
+go_back_user(16);
 }
 
 void homepage()
@@ -691,6 +722,7 @@ void homepage()
     system("cls");
     //gotoxy(94, 10);
     logo();
+     c_time();
     int a_position = 1, keyPressed = 0;
 
     // 13 is the ASCII value of Enter KEY
@@ -702,13 +734,13 @@ void homepage()
     gotoxy(24, 14);
     menuArrow(3,a_position); printf("3. CANCEL YOUR SEAT");
     gotoxy(24, 16);
-    menuArrow(4,a_position); printf("4. FAQ");
+    menuArrow(4,a_position); printf("4. CREDITS");
     gotoxy(24, 18);
     menuArrow(5,a_position); printf("5. LOG OUT");
-
+    gotoxy(24,20);
     keyPressed = getch();
 
-    if(keyPressed == 80 && a_position != 5){
+    if(keyPressed == 80 && a_position != 6){
         a_position++;
     }
     else if(keyPressed == 72 && a_position != 1){
@@ -724,7 +756,7 @@ void homepage()
     if(a_position==1) Myprofile();
     if(a_position==2) book_seat();
     if(a_position==3) Cancelseat();
-    //if(a_position==4) faqBot();
+    if(a_position==4) credits();
     if(a_position==5) main();
 
 }
@@ -924,8 +956,5 @@ int main()
     default:
         printf("SYSTEM ERROR!");
     }
-
-    //homepage();
-    //adminPanel();
     getchar();
 }
