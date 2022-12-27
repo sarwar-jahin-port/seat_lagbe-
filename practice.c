@@ -4,6 +4,7 @@
 #include<windows.h>
 #include<time.h>
 
+
 /// This function used to put cursor in different co-ordinates in console.
 void gotoxy(int x, int y)
 {
@@ -44,10 +45,22 @@ char seatArray[50][4];
 //char org[70] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 void c_time()
 {
+    //while(1){
     time_t s = time(NULL);
     struct tm* cur_time;
     cur_time= localtime(&s);
+    gotoxy(94, 10);
     printf("Time: %02d:%02d:%02d", cur_time->tm_hour, cur_time->tm_min, cur_time->tm_sec);
+   // }
+}
+//This function is used for Operating Menu by upper and lower key
+// It improves user experience
+void menuArrow(int realPosition, int arrowPosition){
+        if(realPosition == arrowPosition){
+            printf(" ==>> - ");
+        }else{
+            printf("        ");
+        }
 }
 /// Logo for app.
 void logo()
@@ -122,6 +135,8 @@ void login()
 /// signup function used to register new users to the app. And there data stores in userDB.txt file.
 void signup()
 {
+    system("cls");
+    logo();
     int x;
     char uid[10], key[100], route[100];
     gotoxy(50, 10);
@@ -222,13 +237,11 @@ void view_user()
     for(i=1, j=9; i<n; i++, j+=3)
     {
         gotoxy(74, j+i);
-        printf("id:%s\t\t\n", u[i].id);
+        printf("ID:%s\t\t\n", u[i].id);
         gotoxy(74, j+1+i);
-        printf("pass:%s\t\n", u[i].pass);
+        printf("ROLE:%s\t\t\n", u[i].role);
         gotoxy(74, j+2+i);
-        printf("role:%s\t\t\n", u[i].role);
-        gotoxy(74, j+3+i);
-        printf("route:%s\t\n", u[i].route);
+        printf("ROUTE:%s\t\n\n", u[i].route);
     }
     go_back(j);
     getchar();
@@ -244,29 +257,32 @@ void go_back_user(int j)
 }
 void Myprofile()
 {
+
     int seat_no=0, s1_found=-1, s2_found=-1;
     char seat1[30],seat2[30];
     getData();
     gotoxy(24, 10);
     printf("                     ");
-    gotoxy(55, 10);
-    printf("                     ");
+    gotoxy(55, 12);
+    printf("                          ");
     gotoxy(24, 12);
-    printf("                     ");
+    printf("                            ");
     gotoxy(24, 14);
-    printf("                    ");
+    printf("                            ");
     gotoxy(24, 16);
-    printf("                    ");
+    printf("                            ");
     gotoxy(24, 18);
+    printf("                     ");
+    gotoxy(24, 20);
     printf("                    ");
     gotoxy(24, 10);
-    printf("%s\n", u[current].id);
+    printf("My ID: %s\n", u[current].id);
     gotoxy(24, 12);
-    printf("%s\n", u[current].pass);
+    printf("Password: %s\n", u[current].pass);
     gotoxy(24, 14);
-    printf("%s\n", u[current].role);
+    printf("Role: %s\n", u[current].role);
     gotoxy(24, 16);
-    printf("%s\n", u[current].route);
+    printf("Route: %s\n", u[current].route);
     FILE *fp = fopen("Bus information.txt","r");
     int seat_available, seat_booked;
     fscanf(fp, "%d", &seat_available); // available seat
@@ -306,7 +322,7 @@ void Myprofile()
     if(s1_found != -1)
     {
         gotoxy(24, 14);
-        printf("Booked seat:%s",seat1);
+        printf("Booked Seat: %s",seat1);
         if(s2_found != -1) printf(" %s",seat2);
     }
     go_back_user(12);
@@ -673,28 +689,44 @@ void Cancelseat()
 void homepage()
 {
     system("cls");
-    gotoxy(94, 10);
-    c_time();
+    //gotoxy(94, 10);
     logo();
+    int a_position = 1, keyPressed = 0;
+
+    // 13 is the ASCII value of Enter KEY
+    while(keyPressed != 13){
     gotoxy(24, 10);
-    printf("1. MY PROFILE");
+    menuArrow(1,a_position); printf("1. MY PROFILE");
     gotoxy(24, 12);
-    printf("2. BOOK YOUR SEAT");
+    menuArrow(2,a_position); printf("2. BOOK YOUR SEAT");
     gotoxy(24, 14);
-    printf("3. CANCEL YOUR SEAT");
+    menuArrow(3,a_position); printf("3. CANCEL YOUR SEAT");
     gotoxy(24, 16);
-    printf("4. FAQ");
+    menuArrow(4,a_position); printf("4. FAQ");
     gotoxy(24, 18);
-    printf("5. LOG OUT");
-    gotoxy(24, 20);
-    printf("Enter Number: ");
-    int q;
-    scanf("%d", &q);
-    if(q==1) Myprofile();
-    if(q==2) book_seat();
-    if(q==3) Cancelseat();
-    //if(q==4) faqBot();
-    if(q==5) main();
+    menuArrow(5,a_position); printf("5. LOG OUT");
+
+    keyPressed = getch();
+
+    if(keyPressed == 80 && a_position != 5){
+        a_position++;
+    }
+    else if(keyPressed == 72 && a_position != 1){
+        a_position--;
+    }
+    else{
+        a_position = a_position;
+    }
+    }
+
+    c_time();
+
+    if(a_position==1) Myprofile();
+    if(a_position==2) book_seat();
+    if(a_position==3) Cancelseat();
+    //if(a_position==4) faqBot();
+    if(a_position==5) main();
+
 }
 void go_back(int j)
 {
@@ -852,23 +884,36 @@ void update_user()
     go_back(15);
 }
 
-
 /// Initiate page of the app. Users can register or login from here.
 int main()
 {
     system("cls");
-    int q;
+    int a_position = 1, keyPressed = 0;
     getData();
     logo();
-    gotoxy(50, 10);
-    printf("  1. Login\n");
-    gotoxy(50, 12);
-    printf("  2. Register\n");
-    gotoxy(50, 14);
-    printf("  Enter Number: ");
-    scanf("%d", &q);
 
-    switch(q)
+    // 13 is the ASCII value of Enter KEY
+    while(keyPressed != 13){
+    //system("cls");
+    gotoxy(45, 10);
+    menuArrow(1,a_position); printf("1. LOGIN\n");
+    gotoxy(45, 12);
+    menuArrow(2,a_position);printf("2. REGISTER\n");
+
+    keyPressed = getch();
+
+    if(keyPressed == 80 && a_position != 2){
+        a_position++;
+    }
+    else if(keyPressed == 72 && a_position != 1){
+        a_position--;
+    }
+    else{
+        a_position = a_position;
+    }
+    }
+
+    switch(a_position)
     {
     case(1):
         login();
@@ -877,8 +922,9 @@ int main()
         signup();
         break;
     default:
-        printf("Enter the correct number.");
+        printf("SYSTEM ERROR!");
     }
+
     //homepage();
     //adminPanel();
     getchar();
