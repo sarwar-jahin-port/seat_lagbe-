@@ -2,10 +2,6 @@ C223101
 pp1
 admin
 Chawkbazar
-C223102
-pp2
-user
-Bahaddarhat
 C223103
 pp3
 user
@@ -26,8 +22,8 @@ C223107
 pp7
 user
 Chawkbazar
-C223108
-pp8
+C223156
+qwerty
 user
 Bahaddarhat
 C223109
