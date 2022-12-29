@@ -572,6 +572,8 @@ void book_seat()
         fclose(fp);
         gotoxy(45,10);
         printf("BOOKING FOR IIUC to %s", u[current].route);
+
+        printf("SEAT BOOKING FOR FROM VARSITY");
         if(seat_available != 2)
         {
             FILE *fp = fopen("Bus information.txt","w");
@@ -893,15 +895,22 @@ void Cancelseat()
 
     gotoxy(24, 10);
     printf("ENTER (X) TO CANCEL!");
+
+    printf("                    ");
+    gotoxy(24, 18);
+    printf("                    ");
+
     gotoxy(24, 12);
     scanf(" %c",&confirm);
     //printf("%c", confirm);
     if(confirm==88 || confirm==120)
     {
         seat_cancel();
+
         gotoxy(24, 10);
         printf("CANCELLED SUCCESSFULLY");
         sleep(1);
+
         homepage();
     }
     else
@@ -941,6 +950,7 @@ void credits()
     go_back_user(16);
 }
 
+
 void bus_schedule(){
     system("cls");
     logo();
@@ -962,6 +972,7 @@ void bus_schedule(){
 
     go_back_user(16);
 }
+
 
 void homepage()
 {
@@ -1058,7 +1069,6 @@ void homepage()
     if(a_position==4) Cancelseat();
     if(a_position==5) credits();
     if(a_position==6) main();
-
 }
 
 int search_by_id()

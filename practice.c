@@ -22,6 +22,11 @@ struct User
     char id[20], pass[100], route[100], role[10];
 };
 struct User u[100];
+struct c_user{
+    char c_id[20], c_pass[100], route[100], role[10], c_seat[2][4];
+    int c_seat_no;
+};
+struct c_user cu_user;
 
 struct SeatBooking
 {
@@ -280,9 +285,12 @@ void adminPanel()
         gotoxy(24, 16);
         menuArrow(4,a_position);
         printf("4. UPDATE USER(ID): ");
+        gotoxy(24, 18);
+        menuArrow(5,a_position);
+        printf("5. LOG OUT ");
 
         keyPressed = getch();
-        if(keyPressed == 80 && a_position != 4) a_position++;
+        if(keyPressed == 80 && a_position != 5) a_position++;
         else if(keyPressed == 72 && a_position != 1) a_position--;
         else a_position = a_position;
         printf("\e[?25l"); /// used to hide cursor in console
@@ -304,6 +312,8 @@ void adminPanel()
         printf("\e[?25h"); /// used to show hidden cursor in console.
         update_user();
         break;
+    case(5):
+        main();
     default:
         printf("SYSTEM ERROR!");
     }
@@ -395,9 +405,8 @@ void go_back(int j)
     else go_back(j);
 }
 
-void Myprofile()
+void Myprofile(int r)
 {
-
     int seat_no=0, s1_found=-1, s2_found=-1;
     char seat1[30],seat2[30];
     getData();
@@ -451,6 +460,7 @@ void Myprofile()
         }
         //printf("entered in loop");
         fscanf(fp, "%d", &seat[i].seat_no);
+        cu_user.c_seat_no=seat[i].seat_no;
         for(int j=0; j<seat[i].seat_no; j++)
         {
             fscanf(fp, "%s",seat[i].seat_name[j]);
@@ -461,12 +471,13 @@ void Myprofile()
 
     if(s1_found != -1)
     {
+        strcpy(cu_user.c_seat[0], seat1);
         gotoxy(24, 14);
         printf("Booked Seat: %s",seat1);
-        if(s2_found != -1) printf(" %s",seat2);
+        if(s2_found != -1) {printf(" %s",seat2); strcpy(cu_user.c_seat[1], seat2);}
     }
-    go_back_user(12);
-    getchar();
+    if(r!=0) go_back_user(12);
+    //getchar();
 }
 
 void delete_seat(char seatToDelete[], int seat_available)
@@ -851,7 +862,6 @@ void seat_cancel()
             }
         }
     }
-
 }
 
 void Cancelseat()
@@ -877,6 +887,7 @@ void Cancelseat()
     if(confirm==88 || confirm==120)
     {
         seat_cancel();
+        homepage();
     }
     else
     {
@@ -917,10 +928,52 @@ void credits()
 
 void homepage()
 {
+    cu_user.c_seat_no=0;
+    Myprofile(0);
     system("cls");
     //gotoxy(94, 10);
     logo();
     c_time();
+    int i, j;
+    for(int i=12; i<22; i++)
+    {
+        gotoxy(90, i);
+        printf("|XX");
+        gotoxy(93, i);
+        printf("|");
+
+        gotoxy(94, i);
+        printf("|XX");
+        gotoxy(97, i);
+        printf("|");
+    }
+
+    for(int i=12; i<22; i++)
+    {
+        gotoxy(101, i);
+        printf("|XX");
+        gotoxy(104, i);
+        printf("|");
+
+        gotoxy(105, i);
+        printf("|XX");
+        gotoxy(108, i);
+        printf("|");
+    }
+    int x, y, n;
+
+    for(n=0;n<cu_user.c_seat_no;n++)
+    {
+        if(cu_user.c_seat[n][1]=='A') x=91;
+        if(cu_user.c_seat[n][1]=='B') x=95;
+        if(cu_user.c_seat[n][1]=='C') x=102;
+        if(cu_user.c_seat[n][1]=='D') x=106;
+        y = cu_user.c_seat[n][0] - 37;
+        gotoxy(x, y);
+        printf("%s", cu_user.c_seat[n]);
+    }
+
+    //printf("%d %d", x, y);
     int a_position = 1, keyPressed = 0;
 
     // 13 is the ASCII value of Enter KEY
@@ -945,7 +998,7 @@ void homepage()
         gotoxy(24,20);
         keyPressed = getch();
 
-        if(keyPressed == 80 && a_position != 6)
+        if(keyPressed == 80 && a_position != 5)
         {
             a_position++;
         }
@@ -959,7 +1012,7 @@ void homepage()
         }
     }
     c_time();
-    if(a_position==1) Myprofile();
+    if(a_position==1) Myprofile(1);
     if(a_position==2) book_seat();
     if(a_position==3) Cancelseat();
     if(a_position==4) credits();
