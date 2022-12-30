@@ -552,14 +552,14 @@ void book_seat()
     logo();
     int seat_available, seat_booked, user_input;
 
-    if(hour >= 6 && min >= 0 && hour<=9)
+    if(hour >= 0 && min >= 0 && hour<9)
     {
         towardsVarsity();
         gotoxy(45,10);
         printf("BOOKING FOR %s to IIUC", u[current].route);
     }
 
-    if(hour >= 10 && min >= 0 && hour <= 16)
+    if(hour >= 9 && min >= 0 && hour <= 16)
     {
         FILE *af=fopen("seat_info.txt", "r");
         for(int a=0; fscanf(af, "%s", seatArray[a])!=-1; a++)
