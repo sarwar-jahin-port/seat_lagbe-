@@ -159,7 +159,7 @@ void login()
     {
         if(index < 0) index = 0;
         /* 8 is ASCII value of BACKSPACE character */
-        if(ch == 8)
+        if(ch == 8 && index!= 0)
         {
             putch('\b');
             putch(' ');
