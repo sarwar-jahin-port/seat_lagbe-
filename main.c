@@ -159,7 +159,7 @@ void login()
     {
         if(index < 0) index = 0;
         /* 8 is ASCII value of BACKSPACE character */
-        if(ch == 8)
+        if(ch == 8 && index!= 0)
         {
             putch('\b');
             putch(' ');
@@ -552,14 +552,14 @@ void book_seat()
     logo();
     int seat_available, seat_booked, user_input;
 
-    if(hour >= 13 && min >= 0)
+    if(hour >= 0 && min >= 0 && hour<9)
     {
         towardsVarsity();
         gotoxy(45,10);
-        printf("SEAT BOOKING FOR TOWARDS VARSITY");
+        printf("BOOKING FOR %s to IIUC", u[current].route);
     }
 
-    if(hour >= 9 && min >= 0 && hour < 13)
+    if(hour >= 9 && min >= 0 && hour <= 16)
     {
         FILE *af=fopen("seat_info.txt", "r");
         for(int a=0; fscanf(af, "%s", seatArray[a])!=-1; a++)
@@ -571,7 +571,7 @@ void book_seat()
         fscanf(fp, "%d", &seat_available);
         fclose(fp);
         gotoxy(45,10);
-        printf("SEAT BOOKING FOR FROM VARSITY");
+        printf("BOOKING FOR IIUC to %s", u[current].route);
         if(seat_available != 2)
         {
             FILE *fp = fopen("Bus information.txt","w");
@@ -580,6 +580,7 @@ void book_seat()
             fclose(fp);
         }
     }
+
 
     /*char seatArray[50][4] = {"1A", "1B", "1C", "1D",
                              "2A", "2B", "2C", "2D",
@@ -875,18 +876,31 @@ void Cancelseat()
     gotoxy(24, 14);
     printf("                           ");
     gotoxy(24, 16);
+    printf("                           ");
+    gotoxy(24, 18);
+    printf("                           ");
+    gotoxy(24, 20);
+    printf("                            ");
+    char confirm;
+
+    gotoxy(24, 10);
+    printf("ENTER (X) TO CANCEL!");
+
     printf("                    ");
     gotoxy(24, 18);
     printf("                    ");
-    char confirm;
-    gotoxy(24, 10);
-    printf("Enter (X) to Cancel!");
+
     gotoxy(24, 12);
     scanf(" %c",&confirm);
     //printf("%c", confirm);
     if(confirm==88 || confirm==120)
     {
         seat_cancel();
+
+        gotoxy(24, 10);
+        printf("CANCELLED SUCCESSFULLY");
+        sleep(1);
+
         homepage();
     }
     else
@@ -925,6 +939,30 @@ void credits()
 
     go_back_user(16);
 }
+
+
+void bus_schedule(){
+    system("cls");
+    logo();
+    gotoxy(45,10);
+    printf(" TODAYS BUS SCHEDULE");
+    gotoxy(40,12);
+    printf("     TO VARSITY");
+    gotoxy(40,13);
+    printf("DEPARTURE TIME: 9:00 PM | DRIVER: KARIM MOLLA");
+    gotoxy(40,14);
+    printf("BUS NUMBER: CHA-METRO 7789 | CONTACT: 01710056789");
+
+    gotoxy(40,16);
+    printf("     FROM VARSITY");
+    gotoxy(40,17);
+    printf("DEPARTURE TIME: 16:00 PM | DRIVER: RAHIM SHEIKH");
+    gotoxy(40,18);
+    printf("BUS NUMBER: CHA-METRO 5475 | CONTACT: 01700123456");
+
+    go_back_user(16);
+}
+
 
 void homepage()
 {
@@ -988,17 +1026,20 @@ void homepage()
         printf("2. BOOK YOUR SEAT");
         gotoxy(24, 14);
         menuArrow(3,a_position);
-        printf("3. CANCEL YOUR SEAT");
+        printf("3. BUS SCHEDULE");
         gotoxy(24, 16);
         menuArrow(4,a_position);
-        printf("4. CREDITS");
+        printf("4. CANCEL YOUR SEAT");
         gotoxy(24, 18);
         menuArrow(5,a_position);
-        printf("5. LOG OUT");
+        printf("5. CREDITS");
+        gotoxy(24, 20);
+        menuArrow(6,a_position);
+        printf("6. LOG OUT");
         gotoxy(24,20);
         keyPressed = getch();
 
-        if(keyPressed == 80 && a_position != 5)
+        if(keyPressed == 80 && a_position != 6)
         {
             a_position++;
         }
@@ -1014,10 +1055,10 @@ void homepage()
     c_time();
     if(a_position==1) Myprofile(1);
     if(a_position==2) book_seat();
-    if(a_position==3) Cancelseat();
-    if(a_position==4) credits();
-    if(a_position==5) main();
-
+    if(a_position==3) bus_schedule();
+    if(a_position==4) Cancelseat();
+    if(a_position==5) credits();
+    if(a_position==6) main();
 }
 
 int search_by_id()
