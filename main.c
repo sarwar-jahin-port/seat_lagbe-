@@ -572,8 +572,6 @@ void book_seat()
         fclose(fp);
         gotoxy(45,10);
         printf("BOOKING FOR IIUC to %s", u[current].route);
-
-        printf("SEAT BOOKING FOR FROM VARSITY");
         if(seat_available != 2)
         {
             FILE *fp = fopen("Bus information.txt","w");
@@ -583,14 +581,6 @@ void book_seat()
         }
     }
 
-    if(hour < 6 || hour>16){
-        gotoxy(45,10);
-        printf("BOOKING ISN'T STARTED YET");
-        gotoxy(45,11);
-        printf("BOOKING TIME IS FROM 6AM to 9AM & 10AM to 4PM");
-
-        go_back_user(10);
-    }
 
     /*char seatArray[50][4] = {"1A", "1B", "1C", "1D",
                              "2A", "2B", "2C", "2D",
