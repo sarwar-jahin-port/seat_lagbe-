@@ -1135,11 +1135,11 @@ void update_user()
     gotoxy(24, 12);
     printf("                     ");
     gotoxy(24, 14);
-    printf("                    ");
+    printf("                                          ");
     gotoxy(24, 16);
-    printf("                              ");
+    printf("                                          ");
     gotoxy(24, 18);
-    printf("                    ");
+    printf("                                          ");
 
     int x;
     char uid[10], key[100], route[100];
