@@ -150,10 +150,10 @@ void login()
     gotoxy(50, 14);
     printf("\t\t\t");
     gotoxy(50, 12);
-    printf("  Enter ID: ");
+    printf("  ENTER ID: ");
     scanf("%s", u_id);
     gotoxy(50, 14);
-    printf("  Enter Password: ");
+    printf("  PASSWORD: ");
     /* 13 is ASCII value of Enter key */
     while((ch = getch()) != 13)
     {
@@ -194,7 +194,7 @@ void login()
     if(checkingIfUserfound == 0)
     {
         gotoxy(52, 16);
-        printf("Wrong Username or Password entered.");
+        printf("WRONG USERNAME OR PASSWORD! TRY AGAIN");
         sleep(1);
         login();
     }
@@ -204,7 +204,7 @@ void signup()
 {
     system("cls");
     logo();
-    int x;
+    int x, a_position =1 , keyPressed = 0;
     char uid[10], key[100], route[100];
     gotoxy(50, 10);
     printf("  REGISTER\t\t");
@@ -213,33 +213,49 @@ void signup()
     gotoxy(50, 14);
     printf("                   ");
     gotoxy(50, 12);
-    printf("  Enter ID: ");
+    printf("  ENTER ID: ");
     scanf("%s", uid);
     gotoxy(50, 14);
-    printf("  Enter Password: ");
+    printf("  ENTER PASSWORD: ");
     scanf("%s", key);
 
     gotoxy(50, 16);
-    printf("  Routes Available:\n");
-    gotoxy(50, 18);
-    printf("  1. IIUC - Chawkbazar\n");
-    gotoxy(50, 20);
-    printf("  2. IIUC - Bahaddarhat\n");
-    gotoxy(50, 22);
-    printf("  Enter Your Route: ");
-    scanf("%d", &x);
+    printf("  ROUTES AVAILABLE:\n");
+
+    while(keyPressed != 13)
+    {
+        gotoxy(50, 18);
+       menuArrow(1,a_position); printf("  1. IIUC - Chawkbazar\n");
+        gotoxy(50, 20);
+       menuArrow(2,a_position); printf("  2. IIUC - Bahaddarhat\n");
+
+        keyPressed = getch();
+
+        if(keyPressed == 80 && a_position != 2)
+        {
+            a_position++;
+        }
+        else if(keyPressed == 72 && a_position != 1)
+        {
+            a_position--;
+        }
+        else
+        {
+            a_position = a_position;
+        }
+    }
 
     /// Here u is a user structure array which has datatypes(id, pass, route, role);
     strcpy(u[n].id, uid); /// n(global variable) is new user index number.
     strcpy(u[n].pass,key);
     strcpy(u[n].role, "user");
-    if(x == 1) strcpy(u[n].route, "Chawkbazar");
-    else if(x == 2) strcpy(u[n].route, "Bahaddarhat");
+    if(a_position == 1) strcpy(u[n].route, "Chawkbazar");
+    else if(a_position == 2) strcpy(u[n].route, "Bahaddarhat");
 
     n++;
     writeData();
     gotoxy(50, 24);
-    printf("Your signup is successfully done!");
+    printf("ACCOUNT CREATED SUCCESSFULLY");
     sleep(1);
     login();
 }
@@ -327,11 +343,11 @@ void view_user()
     for(i=1, j=9; i<n; i++, j+=3)
     {
         gotoxy(74, j+i);
-        printf("ID:%s\t\t\n", u[i].id);
+        printf("ID: %s\t\t\n", u[i].id);
         gotoxy(74, j+1+i);
-        printf("ROLE:%s\t\t\n", u[i].role);
+        printf("ROLE: %s\t\t\n", u[i].role);
         gotoxy(74, j+2+i);
-        printf("ROUTE:%s\t\n\n", u[i].route);
+        printf("ROUTE: %s\t\n\n", u[i].route);
     }
     go_back(j);
     getchar();
@@ -356,20 +372,20 @@ void add_user()
     int x;
     char uid[10], key[100], route[100];
     gotoxy(24, 12);
-    printf("  Enter ID: ");
+    printf("  ENTER ID: ");
     scanf("%s", uid);
     gotoxy(24, 14);
-    printf("  Enter Password: ");
+    printf("  PASSWORD: ");
     scanf("%s", key);
 
     gotoxy(24, 16);
-    printf("  Routes Available:\n");
+    printf("  ROUTE:\n");
     gotoxy(24, 18);
     printf("  1. IIUC - Chawkbazar\n");
     gotoxy(24, 20);
     printf("  2. IIUC - Bahaddarhat\n");
     gotoxy(24, 22);
-    printf("  Enter Your Route: ");
+    printf("  ENTER ROUTE: ");
     scanf("%d", &x);
     strcpy(u[n].id, uid);
     strcpy(u[n].pass,key);
@@ -552,7 +568,7 @@ void book_seat()
     logo();
     int seat_available, seat_booked, user_input;
 
-    if(hour >= 0 && min >= 0 && hour<9)
+    if(hour >= 0 && min >= 0 && hour<=23)
     {
         towardsVarsity();
         gotoxy(45,10);
@@ -601,6 +617,7 @@ void book_seat()
     {
         if((strcmp(seat[i].uid, u[current].id))==0)
         {
+            gotoxy(45,12);
             printf("YOU ALREADY BOOKED SEAT");
             go_back_user(10);
         }
